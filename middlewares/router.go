@@ -5,15 +5,14 @@ import (
 	"erply/docs"
 	"erply/service"
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func NewRouter(db *sqlx.DB) *gin.Engine {
+func NewRouter() *gin.Engine {
 	r := gin.Default()
 
-	newService := service.NewService(db)
+	newService := service.NewService()
 	newCon := controllers.NewController(newService)
 
 	// Authentication
@@ -21,20 +20,7 @@ func NewRouter(db *sqlx.DB) *gin.Engine {
 
 	// customers
 	customer := r.Group("/customer")
-	customer.POST("create", newCon.CreateCustomer) //
-
-	// @BasePath /api/v1
-
-	// PingExample godoc
-	// @Summary ping example
-	// @Schemes
-	// @Description do ping
-	// @Tags example
-	// @Accept json
-	// @Produce json
-	// @Success 200 {string} FetchCustomer
-	// @Router /customer/fetch [get]
-	customer.GET("fetch", newCon.FetchCustomer) // to fetch the data difference of remote and local server
+	customer.POST("create", newCon.CreateCustomer)
 	customer.GET("get", newCon.GetCustomerByCustomerID)
 	customer.PUT("update", newCon.UpdateCustomer)
 	customer.DELETE("delete", newCon.DeleteCustomer)
