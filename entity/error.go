@@ -4,7 +4,7 @@ import "errors"
 
 // Used in the backend
 var (
-	ErrCustomerNotFound = errors.New("ths customers doesn't exist")
+	ErrCustomerNotFound = errors.New("ths customer doesn't exist in the Erply server")
 )
 
 // Used to return front-end as error code

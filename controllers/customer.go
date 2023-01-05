@@ -3,6 +3,7 @@ package controllers
 import (
 	"erply/entity"
 	"fmt"
+	"github.com/erply/api-go-wrapper/pkg/api/common"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -113,6 +114,19 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 		})
 }
 
+func handleCustomerError(err error) error {
+	if erplyError, ok := err.(*common.ErplyError); ok {
+		switch erplyError.Code {
+		case 1011:
+			return entity.ErrCustomerNotFound
+		default:
+			return err
+		}
+	} else {
+		return err
+	}
+}
+
 func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 	// Parse the body
 	var body entity.Customer
@@ -138,6 +152,7 @@ func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 	}
 
 	_, err := client.CustomerManager.SaveCustomer(ctx, filter)
+	err = handleCustomerError(err)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
 			gin.H{
@@ -177,6 +192,7 @@ func (con *Controller) DeleteCustomer(ctx *gin.Context) {
 
 	err := client.CustomerManager.DeleteCustomer(ctx, filter)
 	if err != nil {
+		err = handleCustomerError(err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
 			gin.H{
 				"error":         "Failed to delete data in the Erply server",

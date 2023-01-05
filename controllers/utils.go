@@ -5,10 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"time"
 )
-
-const TimeSpanByHours = 1.0
 
 func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
 
@@ -31,19 +28,3 @@ func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
 	}
 	return client, true
 }
-
-// It returns false if the target is not updated less than 1 hour
-func isRecentlyUpdated(target time.Time) bool {
-	return time.Now().Sub(target).Seconds() < TimeSpanByHours
-}
-
-// Removes all the nil values
-//func removeNils(m map[string]string) {
-//	val := reflect.ValueOf(m)
-//	for _, e := range val.MapKeys() {
-//		v := val.MapIndex(e)
-//		if !v.IsValid() {
-//			delete(m, e.String())
-//		}
-//	}
-//}
