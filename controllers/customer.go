@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/erply/api-go-wrapper/pkg/api/customers"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -26,8 +27,13 @@ func (con *Controller) CreateCustomer(ctx *gin.Context) {
 		return
 	}
 
-	client, ok := validateUser(ctx, con)
-	if !ok {
+	client, err := validateUser(con)
+	if err != nil {
+		log.Println(err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{
+				"error":   entity.Err_Validation_Failed,
+				"message": "Please login again"})
 		return
 	}
 
@@ -41,7 +47,7 @@ func (con *Controller) CreateCustomer(ctx *gin.Context) {
 	}
 
 	// Save the customer in the remote Erply server
-	_, err := client.CustomerManager.SaveCustomer(ctx, filter)
+	_, err = client.CustomerManager.SaveCustomer(ctx, filter)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable,
 			gin.H{
@@ -62,13 +68,18 @@ func (con *Controller) CreateCustomer(ctx *gin.Context) {
 //	@Router			/customer/{customerID} [get]
 func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 
-	fmt.Println(ctx.FullPath())
 	customerID := ctx.Param("customerID")
 
-	client, ok := validateUser(ctx, con)
-	if !ok {
+	client, err := validateUser(con)
+	if err != nil {
+		log.Println(err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{
+				"error":   entity.Err_Validation_Failed,
+				"message": "Please login again"})
 		return
 	}
+
 	filter := map[string]string{
 		"customerID": customerID,
 	}
@@ -137,8 +148,13 @@ func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 		return
 	}
 
-	client, ok := validateUser(ctx, con)
-	if !ok {
+	client, err := validateUser(con)
+	if err != nil {
+		log.Println(err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{
+				"error":   entity.Err_Validation_Failed,
+				"message": "Please login again"})
 		return
 	}
 
@@ -150,7 +166,7 @@ func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 		"email":       body.Email,
 	}
 
-	_, err := client.CustomerManager.SaveCustomer(ctx, filter)
+	_, err = client.CustomerManager.SaveCustomer(ctx, filter)
 	err = handleCustomerError(err)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
@@ -182,8 +198,13 @@ func (con *Controller) DeleteCustomer(ctx *gin.Context) {
 		return
 	}
 
-	client, ok := validateUser(ctx, con)
-	if !ok {
+	client, err := validateUser(con)
+	if err != nil {
+		log.Println(err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{
+				"error":   entity.Err_Validation_Failed,
+				"message": "Please login again"})
 		return
 	}
 
@@ -195,7 +216,7 @@ func (con *Controller) DeleteCustomer(ctx *gin.Context) {
 		"email":       body.Email,
 	}
 
-	err := client.CustomerManager.DeleteCustomer(ctx, filter)
+	err = client.CustomerManager.DeleteCustomer(ctx, filter)
 	if err != nil {
 		err = handleCustomerError(err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,

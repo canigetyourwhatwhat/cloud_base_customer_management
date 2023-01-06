@@ -4,31 +4,20 @@ import (
 	"erply/entity"
 	erply "github.com/erply/api-go-wrapper/pkg/api"
 	"github.com/erply/api-go-wrapper/pkg/api/common"
-	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
-func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
+func validateUser(con *Controller) (*erply.Client, error) {
 
 	if con.sessionKey == nil || con.clientCode == nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{
-				"error":   "Session key or/and Client code is missing",
-				"message": "Please login again"})
-		return nil, false
+		return nil, entity.ErrLoginInfoMissing
 	}
 	httpCli := http.Client{}
 	client, err := erply.NewClient(*con.sessionKey, *con.clientCode, &httpCli)
 	if err != nil {
-		log.Println(err)
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
-			gin.H{
-				"error":   "Failed to establish client",
-				"message": "Please login again"})
-		return nil, false
+		return nil, entity.ErrFailedEstablishErplyClient
 	}
-	return client, true
+	return client, nil
 }
 
 func handleCustomerError(err error) error {
