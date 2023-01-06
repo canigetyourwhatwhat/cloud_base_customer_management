@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"erply/entity"
 	erply "github.com/erply/api-go-wrapper/pkg/api"
+	"github.com/erply/api-go-wrapper/pkg/api/common"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -27,4 +29,17 @@ func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
 		return nil, false
 	}
 	return client, true
+}
+
+func handleCustomerError(err error) error {
+	if erplyError, ok := err.(*common.ErplyError); ok {
+		switch erplyError.Code {
+		case 1011:
+			return entity.ErrCustomerNotFound
+		default:
+			return err
+		}
+	} else {
+		return err
+	}
 }

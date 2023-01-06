@@ -11,17 +11,10 @@ type Service struct {
 }
 
 func NewService() *Service {
-	//client := redis.NewClient(&redis.Options{
-	//	Addr:        "localhost:6379",
-	//	DB:          0,
-	//	DialTimeout: 100 * time.Millisecond,
-	//	ReadTimeout: 100 * time.Millisecond,
-	//})
-
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "",
+		DB:       0,
 	})
 
 	if _, err := client.Ping(context.Background()).Result(); err != nil {

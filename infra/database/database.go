@@ -11,14 +11,13 @@ import (
 )
 
 func InsertCustomer(ctx *gin.Context, redisDB *redis.Client, customer *customers.Customer) error {
+
 	var buff bytes.Buffer
+	customerIdStr := strconv.Itoa(customer.CustomerID)
 
 	if err := gob.NewEncoder(&buff).Encode(customer); err != nil {
 		return err
 	}
-
-	customerIdStr := strconv.Itoa(customer.CustomerID)
-
 	if err := redisDB.Set(ctx, customerIdStr, buff.Bytes(), 1*time.Hour).Err(); err != nil {
 		return err
 	}

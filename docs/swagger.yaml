@@ -1,4 +1,111 @@
+definitions:
+  entity.AuthenticationInfo:
+    properties:
+      client_code:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.Customer:
+    properties:
+      companyName:
+        type: string
+      customerID:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+    type: object
+host: localhost:9000
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: daichiando98@gmail.com
+    name: Daichi Ando
+    url: https://github.com/canigetyourwhatwhat/cloud_base_customer_management/blob/main/README.md
+  description: It reads and writes customer data using Erply API. It sues cache with
+    Redis.
+  title: Erply cache server
+  version: "1.0"
+paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: It is required to login to call other endpoints
+      parameters:
+      - description: Data to login
+        in: body
+        name: entity.AuthenticationInfo
+        required: true
+        schema:
+          $ref: '#/definitions/entity.AuthenticationInfo'
+      responses: {}
+      summary: For user to login
+  /customer/{customerID}:
+    get:
+      consumes:
+      - application/json
+      description: It gets customer existing customer data from cache if there is
+        data, if not, from the remote Erply server
+      parameters:
+      - description: customer id
+        in: path
+        name: customerID
+        required: true
+        type: string
+      responses: {}
+      summary: For user to get existing customer data
+  /customer/create:
+    post:
+      consumes:
+      - application/json
+      description: It creates new customer data in remote Erply server
+      parameters:
+      - description: Customer data
+        in: body
+        name: entity.Customer
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Customer'
+      responses: {}
+      summary: For user to create new customer data
+  /customer/delete:
+    delete:
+      consumes:
+      - application/json
+      description: It deletes existing customer data in remote Erply server, and it
+        doesn't store this change in local storage.
+      parameters:
+      - description: Customer data
+        in: body
+        name: entity.Customer
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Customer'
+      responses: {}
+      summary: For user to delete existing customer data
+  /customer/update:
+    put:
+      consumes:
+      - application/json
+      description: It updates existing customer data in remote Erply server, and it
+        doesn't store this change in local storage.
+      parameters:
+      - description: Customer data
+        in: body
+        name: entity.Customer
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Customer'
+      responses: {}
+      summary: For user to update existing customer data
+schemes:
+- http
 swagger: "2.0"

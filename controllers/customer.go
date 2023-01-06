@@ -3,11 +3,17 @@ package controllers
 import (
 	"erply/entity"
 	"fmt"
-	"github.com/erply/api-go-wrapper/pkg/api/common"
+	_ "github.com/erply/api-go-wrapper/pkg/api/customers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
+// CreateCustomer
+//	@Summary		For user to create new customer data
+//	@Description	It creates new customer data in remote Erply server
+//	@Param			entity.Customer	body	entity.Customer	true	"Customer data"
+//	@Accept			json
+//	@Router			/customer/create [post]
 func (con *Controller) CreateCustomer(ctx *gin.Context) {
 
 	// Parse the body
@@ -27,6 +33,7 @@ func (con *Controller) CreateCustomer(ctx *gin.Context) {
 
 	// Save the customer
 	filter := map[string]string{
+		"customerID":  body.CustomerID,
 		"firstName":   body.FirstName,
 		"lastName":    body.LastName,
 		"companyName": body.CompanyName,
@@ -47,24 +54,23 @@ func (con *Controller) CreateCustomer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "created a customer"})
 }
 
+// GetCustomerByCustomerID
+//	@Summary		For user to get existing customer data
+//	@Description	It gets customer existing customer data from cache if there is data, if not, from the remote Erply server
+//	@Param			customerID	path	string	true	"customer id"
+//	@Accept			json
+//	@Router			/customer/{customerID} [get]
 func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 
-	// Parse the body
-	var body entity.Customer
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest,
-			gin.H{
-				"error_code": entity.Err_Parsing_JSON_Failed,
-			})
-		return
-	}
+	fmt.Println(ctx.FullPath())
+	customerID := ctx.Param("customerID")
 
 	client, ok := validateUser(ctx, con)
 	if !ok {
 		return
 	}
 	filter := map[string]string{
-		"customerID": body.CustomerID,
+		"customerID": customerID,
 	}
 
 	// First, get the customer from the cache
@@ -91,7 +97,7 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable,
 			gin.H{
-				"error":         "Failed to get customer data from Erply server",
+				"error":         "Failed to get customer data from remote Erply server",
 				"error content": err.Error(),
 			})
 		return
@@ -109,24 +115,17 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK,
 		gin.H{
-			"message": "customer info from Erply server",
+			"message": "customer info from remote Erply server",
 			"result":  remoteCustomers,
 		})
 }
 
-func handleCustomerError(err error) error {
-	if erplyError, ok := err.(*common.ErplyError); ok {
-		switch erplyError.Code {
-		case 1011:
-			return entity.ErrCustomerNotFound
-		default:
-			return err
-		}
-	} else {
-		return err
-	}
-}
-
+// UpdateCustomer
+//	@Summary		For user to update existing customer data
+//	@Description	It updates existing customer data in remote Erply server, and it doesn't store this change in local storage.
+//	@Param			entity.Customer	body	entity.Customer	true	"Customer data"
+//	@Accept			json
+//	@Router			/customer/update [put]
 func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 	// Parse the body
 	var body entity.Customer
@@ -156,15 +155,21 @@ func (con *Controller) UpdateCustomer(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
 			gin.H{
-				"error":         "Failed to update data in the Erply server",
+				"error":         "Failed to update data in the remote Erply server",
 				"error content": err.Error(),
 			})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "data is updated in local storage and remote Erply server"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "data is updated for remote Erply server"})
 }
 
+// DeleteCustomer
+//	@Summary		For user to delete existing customer data
+//	@Description	It deletes existing customer data in remote Erply server, and it doesn't store this change in local storage.
+//	@Param			entity.Customer	body	entity.Customer	true	"Customer data"
+//	@Accept			json
+//	@Router			/customer/delete [delete]
 func (con *Controller) DeleteCustomer(ctx *gin.Context) {
 
 	// Parse the body
@@ -195,11 +200,11 @@ func (con *Controller) DeleteCustomer(ctx *gin.Context) {
 		err = handleCustomerError(err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
 			gin.H{
-				"error":         "Failed to delete data in the Erply server",
+				"error":         "Failed to delete data in the remote Erply server",
 				"error content": err.Error(),
 			})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "data is deleted from local storage and remote Erply server"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "data is deleted from remote Erply server"})
 }
