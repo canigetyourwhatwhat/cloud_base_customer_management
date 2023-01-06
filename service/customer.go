@@ -1,40 +1,27 @@
 package service
 
 import (
-	"erply/entity"
 	"erply/infra/database"
+	"fmt"
+	"github.com/erply/api-go-wrapper/pkg/api/customers"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (s *Service) CreateCustomer(filter map[string]string) error {
-	err := database.InsertCustomer(s.db, filter)
+func (s *Service) CreateCustomer(ctx *gin.Context, customer *customers.Customer) error {
+	err := database.InsertCustomer(ctx, s.redisDB, customer)
 	if err != nil {
+		fmt.Println("hit")
 		return err
 	}
+	fmt.Println("good")
 	return nil
 }
 
-func (s *Service) GetCustomerByCustomerID(customerId string) (*entity.Customer, error) {
-	customer, err := database.GetCustomerByCustomerID(s.db, customerId)
+func (s *Service) GetCustomerByCustomerID(ctx *gin.Context, customerId string) (*customers.Customer, error) {
+	customer, err := database.GetCustomerByCustomerID(ctx, s.redisDB, customerId)
 	if err != nil {
 		return nil, err
 	}
 	return customer, nil
-}
-
-func (s *Service) UpdateCustomerByCustomerID(filter map[string]string) error {
-	err := database.UpdateCustomerByCustomerID(s.db, filter)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) DeleteCustomerByCustomerID(filter map[string]string) error {
-	err := database.DeleteCustomerByCustomerID(s.db, filter["customerID"])
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

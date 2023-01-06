@@ -1,14 +1,13 @@
 package controllers
 
 import (
+	"erply/entity"
 	erply "github.com/erply/api-go-wrapper/pkg/api"
+	"github.com/erply/api-go-wrapper/pkg/api/common"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"time"
 )
-
-const TimeSpanByHours = 1.0
 
 func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
 
@@ -32,18 +31,15 @@ func validateUser(ctx *gin.Context, con *Controller) (*erply.Client, bool) {
 	return client, true
 }
 
-// It returns false if the target is not updated less than 1 hour
-func isRecentlyUpdated(target time.Time) bool {
-	return time.Now().Sub(target).Seconds() < TimeSpanByHours
+func handleCustomerError(err error) error {
+	if erplyError, ok := err.(*common.ErplyError); ok {
+		switch erplyError.Code {
+		case 1011:
+			return entity.ErrCustomerNotFound
+		default:
+			return err
+		}
+	} else {
+		return err
+	}
 }
-
-// Removes all the nil values
-//func removeNils(m map[string]string) {
-//	val := reflect.ValueOf(m)
-//	for _, e := range val.MapKeys() {
-//		v := val.MapIndex(e)
-//		if !v.IsValid() {
-//			delete(m, e.String())
-//		}
-//	}
-//}

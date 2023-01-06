@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+// Login
+//	@Summary		For user to login
+//	@Description	It is required to login to call other endpoints
+//	@Param			entity.AuthenticationInfo	body	entity.AuthenticationInfo	true	"Data to login"
+//	@Accept			json
+//	@Router			/auth [post]
 func (con *Controller) Login(ctx *gin.Context) {
 	var body entity.AuthenticationInfo
 	if err := ctx.ShouldBindJSON(&body); err != nil {

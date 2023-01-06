@@ -2,15 +2,28 @@ package middlewares
 
 import (
 	"erply/controllers"
+	_ "erply/docs"
 	"erply/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"time"
 )
 
-func NewRouter(db *sqlx.DB) *gin.Engine {
+func NewRouter() *gin.Engine {
 	r := gin.Default()
 
-	newService := service.NewService(db)
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:9000"},
+		AllowMethods:     []string{"CREAT", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	newService := service.NewService()
 	newCon := controllers.NewController(newService)
 
 	// Authentication
@@ -18,11 +31,13 @@ func NewRouter(db *sqlx.DB) *gin.Engine {
 
 	// customers
 	customer := r.Group("/customer")
-	customer.POST("create", newCon.CreateCustomer) //
-	customer.GET("fetch", newCon.FetchCustomer)    // to fetch the data difference of remote and local server
-	customer.GET("get", newCon.GetCustomerByCustomerID)
+	customer.POST("create", newCon.CreateCustomer)
+	customer.GET(":customerID", newCon.GetCustomerByCustomerID)
+	//customer.GET("list", newCon.ListCustomers)
 	customer.PUT("update", newCon.UpdateCustomer)
 	customer.DELETE("delete", newCon.DeleteCustomer)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	return r
 }
