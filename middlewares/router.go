@@ -1,9 +1,7 @@
 package middlewares
 
 import (
-	"erply/controllers"
 	_ "erply/docs"
-	"erply/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -12,8 +10,10 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	r := gin.Default()
+	newCon := RegisterExternalDevices()
 
+	// resolving CORS
+	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:9000"},
 		AllowMethods:     []string{"CREAT", "POST", "PUT", "DELETE"},
@@ -22,9 +22,6 @@ func NewRouter() *gin.Engine {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
-	newService := service.NewService()
-	newCon := controllers.NewController(newService)
 
 	// Authentication
 	r.POST("/auth", newCon.Login)
@@ -37,6 +34,7 @@ func NewRouter() *gin.Engine {
 	customer.PUT("update", newCon.UpdateCustomer)
 	customer.DELETE("delete", newCon.DeleteCustomer)
 
+	// Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	return r

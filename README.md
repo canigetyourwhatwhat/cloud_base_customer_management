@@ -20,6 +20,9 @@ its architecture focuses on [Clean Architecture](https://blog.cleancoder.com/unc
   - [Infra](https://github.com/canigetyourwhatwhat/cloud_base_customer_management/tree/main/infra) should contain all the external contents such as handling DB, Payment, send email, Cloud service functions.
 - All the API endpoints/paths are in [router.go](https://github.com/canigetyourwhatwhat/cloud_base_customer_management/blob/main/middlewares/router.go).
 
+### Strength of this structure
+- Infra contains all the external devices that it can easily scale whenever it needs to use external API such as Sendgrid.
+  - f
 
 ## How to run
 > Note: Docker should be already installed

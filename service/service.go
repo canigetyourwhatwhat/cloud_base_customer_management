@@ -1,26 +1,22 @@
 package service
 
 import (
-	"context"
-	"github.com/go-redis/redis/v8"
-	"log"
+	"erply/infra"
+	"github.com/erply/api-go-wrapper/pkg/api/customers"
+	"github.com/gin-gonic/gin"
 )
 
-type Service struct {
-	redisDB *redis.Client
+type CustomerServiceInterface interface {
+	CreateCustomer(ctx *gin.Context, customer *customers.Customer) error
+	GetCustomerByCustomerID(ctx *gin.Context, customerId string) (*customers.Customer, error)
 }
 
-func NewService() *Service {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
+type CustomerServiceStruct struct {
+	dh infra.DataHandler
+}
 
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		log.Println("failed to connect redis")
-		panic(err)
-		return nil
+func NewCustomerService(dh infra.DataHandler) CustomerServiceInterface {
+	return &CustomerServiceStruct{
+		dh: dh,
 	}
-	return &Service{redisDB: client}
 }

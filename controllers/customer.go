@@ -85,7 +85,7 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 	}
 
 	// First, get the customer from the cache
-	localCustomer, err := con.service.GetCustomerByCustomerID(ctx, filter["customerID"])
+	localCustomer, err := con.cs.GetCustomerByCustomerID(ctx, filter["customerID"])
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -114,7 +114,7 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 		return
 	}
 
-	err = con.service.CreateCustomer(ctx, &remoteCustomers[0])
+	err = con.cs.CreateCustomer(ctx, &remoteCustomers[0])
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError,
 			gin.H{
