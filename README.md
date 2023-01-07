@@ -21,7 +21,7 @@ its architecture focuses on [Clean Architecture](https://blog.cleancoder.com/unc
 - [middlewares](https://github.com/canigetyourwhatwhat/cloud_base_customer_management/tree/main/middlewares) creates router and set up all the necessary components.
 
 ### Strength of this architecture design
-for more details click [here](https://github.com/canigetyourwhatwhat/cloud_base_customer_management/blob/main/docs/strcture.md)
+for more details click [here](https://github.com/canigetyourwhatwhat/cloud_base_customer_management/blob/main/docs/structure.md)
 
 ## How to run
 > Note: Docker should be already installed

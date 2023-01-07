@@ -11,7 +11,7 @@ import (
 //	@description	It reads and writes customer data using Erply API. It sues cache with Redis.
 
 //	@contact.name	Daichi Ando
-//	@contact.url	https://github.com/canigetyourwhatwhat/cloud_base_customer_management/blob/main/README.md
+//	@contact.url	https://github.com/canigetyourwhatwhat/cloud_base_customer_management
 //	@contact.email	daichiando98@gmail.com
 
 //	@host		localhost:9000
