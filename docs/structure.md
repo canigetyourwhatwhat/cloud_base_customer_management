@@ -27,26 +27,3 @@
 - Using [mockgen](https://github.com/golang/mock) to complete unit test
   1. To complete unit test with a function that uses another function, there is a need to create mock function for it.
   2. It uses mockgen to auto-generate mock functions and interface, and enable to conduct unit test one by one.
-
-
-
-
-Flow:
-```mermaid
-classDiagram
-Class01 <|-- AveryLongClass : Cool
-<<Interface>> Class01
-Class09 --> C2 : Where am I?
-Class09 --* C3
-Class09 --|> Class07
-Class07 : equals()
-Class07 : Object[] elementData
-Class01 : size()
-Class01 : int chimp
-Class01 : int gorilla
-class Class10 {
-<<service>>
-int id
-size()
-}
-```
