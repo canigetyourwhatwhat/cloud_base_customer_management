@@ -8,7 +8,7 @@ import (
 type Controller struct {
 	sessionKey *string
 	clientCode *string
-	cs         service.CustomerServiceInterface
+	cs         service.CustomerServiceHandler
 }
 
 type ControllerHandler interface {
@@ -18,7 +18,7 @@ type ControllerHandler interface {
 	DeleteCustomer(ctx *gin.Context)
 }
 
-func NewController(cs service.CustomerServiceInterface) *Controller {
+func NewController(cs service.CustomerServiceHandler) *Controller {
 	return &Controller{
 		cs: cs,
 	}

@@ -1,8 +1,8 @@
 package infra
 
 import (
+	"context"
 	"github.com/erply/api-go-wrapper/pkg/api/customers"
-	"github.com/gin-gonic/gin"
 )
 
 // DataHandler
@@ -14,6 +14,6 @@ type DataHandler interface {
 // CustomerHandler
 // interface for handling Customer information with Redis
 type CustomerHandler interface {
-	InsertCustomer(ctx *gin.Context, customer *customers.Customer) error
-	GetCustomerByCustomerID(ctx *gin.Context, customerID string) (*customers.Customer, error)
+	InsertCustomer(ctx context.Context, customer *customers.Customer) error
+	GetCustomerByCustomerID(ctx context.Context, customerID string) (*customers.Customer, error)
 }

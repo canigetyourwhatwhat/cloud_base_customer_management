@@ -10,7 +10,9 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	newCon := RegisterExternalDevices()
+
+	// get the controller that has everything already set up
+	newCon := setup()
 
 	// resolving CORS
 	r := gin.Default()

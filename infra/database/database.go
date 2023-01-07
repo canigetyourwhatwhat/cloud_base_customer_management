@@ -2,10 +2,12 @@ package database
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
+	"erply/entity"
 	"erply/infra"
+	"errors"
 	"github.com/erply/api-go-wrapper/pkg/api/customers"
-	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"strconv"
 	"time"
@@ -29,7 +31,7 @@ func NewCustomerHandler(db *redis.Client) infra.CustomerHandler {
 	return &customerHandler{db}
 }
 
-func (ch *customerHandler) InsertCustomer(ctx *gin.Context, customer *customers.Customer) error {
+func (ch *customerHandler) InsertCustomer(ctx context.Context, customer *customers.Customer) error {
 
 	// First, it converts the customer data into byte code using gob pacakge
 	var buff bytes.Buffer
@@ -46,13 +48,16 @@ func (ch *customerHandler) InsertCustomer(ctx *gin.Context, customer *customers.
 	return nil
 }
 
-func (ch *customerHandler) GetCustomerByCustomerID(ctx *gin.Context, customerID string) (*customers.Customer, error) {
+func (ch *customerHandler) GetCustomerByCustomerID(ctx context.Context, customerID string) (*customers.Customer, error) {
 
 	// Get the encoded customer data from Redis
 	cmd := ch.db.Get(ctx, customerID)
 
 	// Convert it as Bytes because it was stored as bytes
 	cmdb, err := cmd.Bytes()
+	if errors.Is(redis.Nil, err) {
+		return nil, entity.ErrCustomerNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

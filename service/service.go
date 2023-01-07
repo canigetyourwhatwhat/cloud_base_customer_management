@@ -1,22 +1,22 @@
 package service
 
 import (
+	"context"
 	"erply/infra"
 	"github.com/erply/api-go-wrapper/pkg/api/customers"
-	"github.com/gin-gonic/gin"
 )
 
-type CustomerServiceInterface interface {
-	CreateCustomer(ctx *gin.Context, customer *customers.Customer) error
-	GetCustomerByCustomerID(ctx *gin.Context, customerId string) (*customers.Customer, error)
+type CustomerServiceHandler interface {
+	CreateCustomer(ctx context.Context, customer *customers.Customer) error
+	GetCustomerByCustomerID(ctx context.Context, customerId string) (*customers.Customer, error)
 }
 
-type CustomerServiceStruct struct {
+type CustomerService struct {
 	dh infra.DataHandler
 }
 
-func NewCustomerService(dh infra.DataHandler) CustomerServiceInterface {
-	return &CustomerServiceStruct{
+func NewCustomerService(dh infra.DataHandler) CustomerServiceHandler {
+	return &CustomerService{
 		dh: dh,
 	}
 }

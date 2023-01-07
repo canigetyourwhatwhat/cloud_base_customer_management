@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"erply/entity"
-	"fmt"
+	"errors"
 	_ "github.com/erply/api-go-wrapper/pkg/api/customers"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -85,9 +85,16 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 	}
 
 	// First, get the customer from the cache
-	localCustomer, err := con.cs.GetCustomerByCustomerID(ctx, filter["customerID"])
-	if err != nil {
-		fmt.Println(err)
+	c := ctx.Request.Context()
+	localCustomer, err := con.cs.GetCustomerByCustomerID(c, filter["customerID"])
+
+	// catches the error if it is not the error of not finding the customer data
+	if !errors.Is(entity.ErrCustomerNotFound, err) && err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
+			gin.H{
+				"error":         entity.Err_Customer_Not_Found,
+				"error_content": err})
+		return
 	}
 	if err == nil {
 		ctx.JSON(http.StatusOK,
@@ -114,7 +121,7 @@ func (con *Controller) GetCustomerByCustomerID(ctx *gin.Context) {
 		return
 	}
 
-	err = con.cs.CreateCustomer(ctx, &remoteCustomers[0])
+	err = con.cs.CreateCustomer(c, &remoteCustomers[0])
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError,
 			gin.H{

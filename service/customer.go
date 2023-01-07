@@ -1,11 +1,11 @@
 package service
 
 import (
+	"context"
 	"github.com/erply/api-go-wrapper/pkg/api/customers"
-	"github.com/gin-gonic/gin"
 )
 
-func (s *CustomerServiceStruct) CreateCustomer(ctx *gin.Context, customer *customers.Customer) error {
+func (s *CustomerService) CreateCustomer(ctx context.Context, customer *customers.Customer) error {
 	err := s.dh.InsertCustomer(ctx, customer)
 	if err != nil {
 		return err
@@ -13,7 +13,7 @@ func (s *CustomerServiceStruct) CreateCustomer(ctx *gin.Context, customer *custo
 	return nil
 }
 
-func (s *CustomerServiceStruct) GetCustomerByCustomerID(ctx *gin.Context, customerId string) (*customers.Customer, error) {
+func (s *CustomerService) GetCustomerByCustomerID(ctx context.Context, customerId string) (*customers.Customer, error) {
 	customer, err := s.dh.GetCustomerByCustomerID(ctx, customerId)
 	if err != nil {
 		return nil, err
