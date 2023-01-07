@@ -32,7 +32,6 @@ func NewRouter() *gin.Engine {
 	customer := r.Group("/customer")
 	customer.POST("create", newCon.CreateCustomer)
 	customer.GET(":customerID", newCon.GetCustomerByCustomerID)
-	//customer.GET("list", newCon.ListCustomers)
 	customer.PUT("update", newCon.UpdateCustomer)
 	customer.DELETE("delete", newCon.DeleteCustomer)
 

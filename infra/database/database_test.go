@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-var ctx = context.Background()
 var db = ConnectDB()
+var ctx = context.Background()
 
 func ConnectDB() *redis.Client {
 	// Connect Redis
@@ -27,6 +27,7 @@ func ConnectDB() *redis.Client {
 		log.Println("failed to connect redis")
 		panic(err)
 	}
+
 	return redisClient
 }
 
@@ -67,7 +68,7 @@ func Test_customerHandler_GetCustomerByCustomerID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ch := &customerHandler{
+			ch := &CustomerHandler{
 				db: tt.fields.db,
 			}
 			got, err := ch.GetCustomerByCustomerID(ctx, tt.args.customerID)
@@ -107,7 +108,7 @@ func Test_customerHandler_InsertCustomer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ch := &customerHandler{
+			ch := &CustomerHandler{
 				db: tt.fields.db,
 			}
 			if err := ch.InsertCustomer(tt.args.ctx, tt.args.customer); (err != nil) != tt.wantErr {

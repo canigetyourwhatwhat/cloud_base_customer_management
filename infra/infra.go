@@ -7,6 +7,7 @@ import (
 
 // DataHandler
 // interface for whole external devices
+//go:generate mockgen -source=infra/infra.go --destination=mocks/infra/infraMockInterface.go infra DataHandler
 type DataHandler interface {
 	CustomerHandler
 }

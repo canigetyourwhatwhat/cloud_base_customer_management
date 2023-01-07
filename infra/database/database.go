@@ -16,22 +16,22 @@ import (
 func NewRedisHandler(db *redis.Client) infra.DataHandler {
 	ch := NewCustomerHandler(db)
 
-	return &redisHandler{ch}
+	return &RedisHandler{ch}
 }
 
-type redisHandler struct {
+type RedisHandler struct {
 	infra.CustomerHandler
 }
 
-type customerHandler struct {
+type CustomerHandler struct {
 	db *redis.Client
 }
 
 func NewCustomerHandler(db *redis.Client) infra.CustomerHandler {
-	return &customerHandler{db}
+	return &CustomerHandler{db}
 }
 
-func (ch *customerHandler) InsertCustomer(ctx context.Context, customer *customers.Customer) error {
+func (ch *CustomerHandler) InsertCustomer(ctx context.Context, customer *customers.Customer) error {
 
 	// First, it converts the customer data into byte code using gob pacakge
 	var buff bytes.Buffer
@@ -48,7 +48,7 @@ func (ch *customerHandler) InsertCustomer(ctx context.Context, customer *custome
 	return nil
 }
 
-func (ch *customerHandler) GetCustomerByCustomerID(ctx context.Context, customerID string) (*customers.Customer, error) {
+func (ch *CustomerHandler) GetCustomerByCustomerID(ctx context.Context, customerID string) (*customers.Customer, error) {
 
 	// Get the encoded customer data from Redis
 	cmd := ch.db.Get(ctx, customerID)
